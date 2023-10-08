@@ -6,4 +6,4 @@ Risolto is a trailblazing technology consultancy reshaping the landscape of digi
 
 
 
-For more information and support visit and contact us at https://www.risolto.co.uk/contact
+For more information and support contact us at https://www.risolto.co.uk/contact
