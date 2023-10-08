@@ -19,7 +19,7 @@
         * Generate Delivery orders based on the warehouse selected .
         * User can see the selected warehouse on Pdf Report, Sales analysis report, Customer portal view.
     """,
-    'license': 'OPL-3',
+    'license': 'LGPL-3',
     'depends': ['sale_management', 'sale_stock'],
     'website': "www.risolto.co.uk",
     'data': [
