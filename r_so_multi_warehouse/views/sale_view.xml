@@ -14,6 +14,7 @@
 						attrs="{'readonly': [('product_updatable', '=', False)]}"
 						required="1" force_save="1" />
 				</xpath>
+				
 				<xpath
 					expr="//field[@name='order_line']//form//field[@name='price_unit']"
 					position="before">

@@ -103,9 +103,10 @@ class SaleOrderLine(models.Model):
         return res
 
     @api.onchange('product_id')
-    def _onchange_product_id_set_customer_lead(self):
-        super(SaleOrderLine, self)._onchange_product_id_set_customer_lead()
+    def _compute_customer_lead(self):
+        res = super(SaleOrderLine, self)._compute_customer_lead()
         self.sol_warehouse_id = self.order_id.warehouse_id
+        return res
 
     @api.depends('product_id', 'route_id', 'order_id.warehouse_id', 'product_id.route_ids', 'sol_warehouse_id',)
     def _compute_is_mto(self):
@@ -141,16 +142,32 @@ class SaleOrderLine(models.Model):
 class sale_report(models.Model):
     _inherit = "sale.report"
 
-    def _query(self, with_clause='', fields={}, groupby='', from_clause=''):
+    def _group_by_sale(self):
         sol_obj = self.env['sale.order.line'].sudo()
+        res =  super(SaleReport, self)._group_by_sale()
         if 'sol_warehouse_id' in sol_obj._fields:
-            fields['warehouse_id'] = ", l.sol_warehouse_id as warehouse_id"
-            groupby += ', l.sol_warehouse_id'
-        else:
-            fields['warehouse_id'] = ", s.warehouse_id as warehouse_id"
-            groupby += ', s.warehouse_id'
-        return super(SaleReport, self)._query(with_clause, fields, groupby, from_clause)
+            res += "\n , l.sol_warehouse_id"
+        return res
+    
+    def _select_additional_fields(self):
+        sol_obj = self.env['sale.order.line'].sudo()
+        res =  super(SaleReport, self)._select_additional_fields()
+        if 'sol_warehouse_id' in sol_obj._fields:
+            res.update({'warehouse_id':'l.sol_warehouse_id'})
+        return res
+    
+    # def _query(self, with_clause='', fields={}, groupby='', from_clause=''):
+    #     sol_obj = self.env['sale.order.line'].sudo()
+    #     if 'sol_warehouse_id' in sol_obj._fields:
+    #         fields['warehouse_id'] = ", l.sol_warehouse_id as warehouse_id"
+    #         groupby += ', l.sol_warehouse_id'
+    #     else:
+    #         fields['warehouse_id'] = ", s.warehouse_id as warehouse_id"
+    #         groupby += ', s.warehouse_id'
 
-    SaleReport._query = _query
+    #     return super(SaleReport, self)._query("".join((with_clause, fields, groupby, from_clause)))
+
+    # SaleReport._query = _group_by_sale
+    # SaleReport._query = _select_additional_fields
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
